@@ -32,4 +32,4 @@ class CategoryRepository:
         return result.modified_count!=0
     def delete(self,id:str)->bool:
         result= self.collection.delete_one({"_id":ObjectId(id)})
-        return result.acknowledged
+        return result.deleted_count>0
