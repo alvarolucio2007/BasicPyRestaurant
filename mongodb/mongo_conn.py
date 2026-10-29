@@ -1,5 +1,7 @@
 from pymongo import MongoClient
 from pymongo.collection import Collection
+
+
 class MongoConnectionError(Exception):
     pass
 def get_mongo_collection(url: str, database_name: str, collection_name: str) -> Collection:
