@@ -23,7 +23,7 @@ class CategoryRepository:
             display_order=result["display_order"]
         )
     def update(self,category:Category)->bool:
-        query_filter={"_id":category.category_id}
+        query_filter={"_id":ObjectId(category.category_id)}
         update_operation={"$set":
             { "name":category.name,
             "display_order":category.display_order,}
