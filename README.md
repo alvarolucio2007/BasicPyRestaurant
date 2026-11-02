@@ -1,4 +1,26 @@
 # BasicPyRestaurant
+Sistema de gestão de restaurante desenvolvido com Python, Streamlit e MongoDB.
+
+## Sumário
+
+- [Visão geral](#visão-geral)
+- [Diferenciais do projeto](#diferenciais-do-projeto)
+- [Stack de tecnologias](#stack-de-tecnologias)
+- [Arquitetura](#arquitetura)
+  - [Estrutura do projeto](#estrutura-do-projeto)
+- [Banco de dados](#banco-de-dados)
+  - [Principais coleções](#principais-coleções)
+  - [Índices](#índices)
+- [Relatórios e agregações](#relatórios-e-agregações)
+- [Como executar](#como-executar)
+- [Decisões de projeto](#decisões-de-projeto)
+- [Escopo e limitações](#escopo-e-limitações)
+- [Licença](#licença)
+
+---
+
+## Visão geral
+...
 
 Sistema de gestão de restaurante desenvolvido com Python, Streamlit e MongoDB.
 
