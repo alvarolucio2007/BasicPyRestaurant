@@ -104,3 +104,79 @@ class OrderRepository:
             return False
         result = self.collection.delete_one({"_id": oid})
         return result.deleted_count > 0
+    def top_selling_products(self, limit: int = 5) -> list[dict]:
+        pipeline = [
+            {"$unwind": "$items"},
+            {"$group": {
+                "_id": "$items.product_id",
+                "product_name": {"$first": "$items.product_name"},
+                "total_quantity": {"$sum": "$items.quantity"},
+                "total_revenue": {"$sum": "$items.subtotal"},
+            }},
+            {"$sort": {"total_quantity": -1}},
+            {"$limit": limit},
+            {"$project": {
+                "_id": 0,
+                "product_name": 1,
+                "total_quantity": 1,
+                "total_revenue": 1,
+            }},
+        ]
+        return list(self.collection.aggregate(pipeline))
+    def revenue_by_category(self) -> list[dict]:
+        pipeline = [
+            {"$unwind": "$items"},
+            {"$group": {
+                "_id": "$items.product_id",
+                "total_revenue": {"$sum": "$items.subtotal"},
+            }},
+            {"$lookup": {
+                "from": "products",
+                "let": {"pid": {"$toObjectId": "$_id"}},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": ["$_id", "$$pid"]}}},
+                    {"$project": {"category_id": 1}},
+                ],
+                "as": "product",
+            }},
+            {"$unwind": "$product"},
+            {"$group": {
+                "_id": "$product.category_id",
+                "total_revenue": {"$sum": "$total_revenue"},
+            }},
+            {"$lookup": {
+                "from": "categories",
+                "let": {"cid": {"$toObjectId": "$_id"}},
+                "pipeline": [
+                    {"$match": {"$expr": {"$eq": ["$_id", "$$cid"]}}},
+                    {"$project": {"name": 1}},
+                ],
+                "as": "category",
+            }},
+            {"$unwind": "$category"},
+            {"$sort": {"total_revenue": -1}},
+            {"$project": {
+                "_id": 0,
+                "category_name": "$category.name",
+                "total_revenue": 1,
+            }},
+        ]
+        return list(self.collection.aggregate(pipeline))
+    def order_summary_by_status(self) -> list[dict]:
+        pipeline = [
+            {"$group": {
+                "_id": "$status",
+                "count": {"$sum": 1},
+                "total_revenue": {"$sum": "$total_amount"},
+                "avg_ticket": {"$avg": "$total_amount"},
+            }},
+            {"$sort": {"count": -1}},
+            {"$project": {
+                "_id": 0,
+                "status": "$_id",
+                "count": 1,
+                "total_revenue": {"$round": ["$total_revenue", 2]},
+                "avg_ticket": {"$round": ["$avg_ticket", 2]},
+            }},
+        ]
+        return list(self.collection.aggregate(pipeline))
