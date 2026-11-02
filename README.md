@@ -65,7 +65,7 @@ MongoDB, aplicando uma separação em camadas inspirada em arquitetura hexagonal
 | SGBD | MongoDB 9 |
 | **Infraestrutura** | |
 | Containerização | Docker e Docker Compose |
-| Administração do banco | MongoDB Compass / Mongo Express |
+| Administração do banco |  Mongo Express |
 
 ---
 
