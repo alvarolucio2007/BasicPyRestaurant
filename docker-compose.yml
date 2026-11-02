@@ -1,6 +1,6 @@
 services:
   mongo:
-    image: mongo:7
+    image: mongo:9
     container_name: restaurant-mongo
     restart: unless-stopped
     ports:
@@ -29,6 +29,15 @@ services:
       ME_CONFIG_BASICAUTH: "false"
     depends_on:
       - mongo
+  frontend:
+      build: .
+      container_name: frontend
+      ports:
+        - "8501:8501"
+      environment:
+        MONGO_URL: mongodb://admin:admin123@mongo:27017/BasicPyRestaurant?authSource=admin
+      depends_on:
+        - mongo
 
 volumes:
   mongo_data:
