@@ -38,18 +38,39 @@ class Streamlit:
 
     def run(self) -> None:
         st.sidebar.title("🍽️ Restaurant Admin")
-        page = st.sidebar.radio(
-            "Navigation",
-            ["🍔 Categories", "🍕 Products", "🧾 Orders"],
-        )
+        page = st.sidebar.radio("Navigation", [
+            "🍔 Categories", "🍕 Products", "🧾 Orders", "📊 Reports",
+        ])
         self.show_flash()
 
         if page == "🍔 Categories":
             self.page_categories()
         elif page == "🍕 Products":
             self.page_products()
-        else:
+        elif page=="🧾 Orders":
             self.page_orders()
+        else:
+            self.page_reports()
+
+    def page_reports(self) -> None:
+        st.header("📊 Reports")
+
+        st.subheader("Top selling products")
+        top = self.order_service.top_selling_products(limit=5)
+        if top:
+            st.dataframe(top, use_container_width=True, hide_index=True)
+        else:
+            st.info("No orders yet.")
+
+        st.subheader("Revenue by category")
+        by_cat = self.order_service.revenue_by_category()
+        if by_cat:
+            st.dataframe(by_cat, use_container_width=True, hide_index=True)
+
+        st.subheader("Order summary by status")
+        summary = self.order_service.order_summary_by_status()
+        if summary:
+            st.dataframe(summary, use_container_width=True, hide_index=True)
 
     def page_categories(self) -> None:
         st.header("Categories")
