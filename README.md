@@ -189,7 +189,7 @@ preservar o histórico:
 ### Opção 1 — Stack completa via Docker (recomendado)
 
 ```bash
-git clone https://github.com/<usuario>/BasicPyRestaurant.git
+git clone https://github.com/alvarolucio2007/BasicPyRestaurant.git
 cd BasicPyRestaurant
 docker compose up -d --build
 ```
