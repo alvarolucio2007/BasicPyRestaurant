@@ -8,5 +8,5 @@ def get_mongo_collection(url: str, database_name: str, collection_name: str) -> 
     try:
         client.admin.command("ping")
     except Exception as e:  # noqa: BLE001
-        raise MongoConnectionError(f"Erro ao conectar: {e}")
+        raise MongoConnectionError(f"Error while connecting: {e}")
     return client[database_name][collection_name]
