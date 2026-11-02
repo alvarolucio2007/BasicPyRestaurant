@@ -131,6 +131,7 @@ MongoDB 9, executado via Docker Compose. O projeto está configurado para uso
 local; a string de conexão pode ser adaptada para o MongoDB Atlas em nuvem,
 adicionando o parâmetro `tlsCAFile` (necessário para TLS).
 
+
 ### Principais coleções
 
 O modelo segue uma abordagem documental, com coleções separadas por entidade e
@@ -177,6 +178,48 @@ preservar o histórico:
   ]
 }
 ```
+
+## Relatórios e agregações
+
+A aplicação expõe três relatórios via aggregation pipeline do MongoDB, consumidos
+pela aba "📊 Reports" da interface. Os cálculos rodam no banco; o frontend só
+exibe.
+
+### Produtos mais vendidos
+
+`$unwind` no array `items` → `$group` por `product_id` somando quantidade e
+receita → `$sort` desc → `$limit` no top N → `$project` para remover o `_id`.
+
+Equivalente MongoDB de um `GROUP BY` com `SUM`, com a diferença de que `$unwind`
+é necessário porque os itens vivem embutidos no pedido.
+
+### Receita por categoria
+
+`$unwind` nos itens → `$group` por `product_id` → `$lookup` em `products` →
+`$unwind` → `$group` por `category_id` → `$lookup` em `categories` → `$unwind` →
+`$sort` → `$project`.
+
+O `$lookup` usa a forma com `let`/`pipeline` e `$toObjectId` porque
+`orders.items.product_id` é string, enquanto `products._id` é `ObjectId`.
+A conversão resolve o mismatch sem mudar o modelo.
+
+### Resumo por status
+
+`$group` por `status` com `$sum: 1` (contagem), `$sum` (receita) e `$avg`
+(ticket médio) → `$sort` desc → `$project` com `$round` para arredondar 2 casas.
+
+Como `status` e `total_amount` estão no nível raiz do documento, não precisa de
+`$unwind`.
+
+### Limitações
+
+- Sem filtro por período ou paginação.
+- Pipelines fazem collection scan; para o volume de demonstração é irrelevante,
+  mas em produção exigiria índices específicos.
+- Sem cache dos resultados (recalculados a cada requisição).
+- Sem exportação (CSV, PDF).
+
+São demonstrações funcionais de aggregation, não um módulo de BI.
 
 ---
 
