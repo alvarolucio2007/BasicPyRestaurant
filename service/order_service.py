@@ -97,3 +97,13 @@ class OrderService:
         ok = self.repo.delete(id=order_id)
         if not ok:
             raise OrderNotFound(order_id)
+    def top_selling_products(self, *, limit: int = 5) -> list[dict]:
+        if limit <= 0 or limit > 50:
+            raise OrderValidationError("Limit must be between 1 and 50.")
+        return self.repo.top_selling_products(limit=limit)
+
+    def revenue_by_category(self) -> list[dict]:
+        return self.repo.revenue_by_category()
+
+    def order_summary_by_status(self) -> list[dict]:
+        return self.repo.order_summary_by_status()
